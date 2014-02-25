@@ -41,7 +41,31 @@ public class Network {
         this.trainFile = trainFile;
     }
     
+    public void setMomentum(float momentum)
+    {
+        this.momentum = momentum;
+    }
+    
+    public void setLearningRate(float learningRate)
+    {
+        this.learningRate = learningRate;
+    }
+    
     public void feedForward(){};
     
     public void backPropagation(){};
+    
+    public void train(int pocetEpoch)
+    {
+        for(int i=0; i<pocetEpoch; i++)
+        {
+            feedForward();
+            backPropagation();
+        }
+    }
+    
+    public void test()
+    {
+        feedForward();
+    }
 }

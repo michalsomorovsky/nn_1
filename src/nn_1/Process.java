@@ -8,6 +8,7 @@ package nn_1;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import javax.swing.JFileChooser;
 
 /**
@@ -29,6 +30,10 @@ public class Process {
         this.window.addFileChooserActionListener(new FileChooserActionListener());
         this.window.addFileChooserActionListener2(new FileChooserActionListener2());
         this.setDefautlXOR();
+        Random rand = new Random();
+        double randomNum = rand.nextDouble();
+        randomNum = -0.5 + randomNum * ((0.5+0.5));
+        System.out.println(randomNum);
     }
     
     public void setDefautlXOR()

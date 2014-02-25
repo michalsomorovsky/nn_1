@@ -11,7 +11,9 @@ package nn_1;
  * @author m.somorovsky
  */
 public class Neuron {
-    double activity;
-    double delta;
-    double treshold;
+    float activity;
+    float delta;
+    float treshold;
+    float[] weights;
+    
 }
