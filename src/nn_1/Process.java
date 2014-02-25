@@ -8,6 +8,7 @@ package nn_1;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -25,6 +26,8 @@ public class Process {
         this.window.addProblemSelectorActionListener(new ProblemSelectorActionListener());
         this.window.addTrainActionListener(new TrainingActionListener());
         this.window.addRunActionListener(new RuningActionListener());
+        this.window.addFileChooserActionListener(new FileChooserActionListener());
+        this.window.addFileChooserActionListener2(new FileChooserActionListener2());
         this.setDefautlXOR();
     }
     
@@ -86,6 +89,30 @@ public class Process {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println("Geronimo2");
+        }
+    }
+    
+    class FileChooserActionListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) 
+            {
+                System.out.println(window.getSelectedTrainFile().getName());
+                neuralNetwork.setTrainFile(window.getSelectedTrainFile());
+            } 
+        }
+    }
+    
+    class FileChooserActionListener2 implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) 
+            {
+                System.out.println(window.getSelectedTestFile().getName());
+                neuralNetwork.setTestFile(window.getSelectedTestFile());
+            } 
         }
     }
 }
