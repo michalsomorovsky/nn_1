@@ -8,7 +8,10 @@ package nn_1;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 
 /**
@@ -30,10 +33,7 @@ public class Process {
         this.window.addFileChooserActionListener(new FileChooserActionListener());
         this.window.addFileChooserActionListener2(new FileChooserActionListener2());
         this.setDefautlXOR();
-        Random rand = new Random();
-        double randomNum = rand.nextDouble();
-        randomNum = -0.5 + randomNum * ((0.5+0.5));
-        System.out.println(randomNum);
+        
     }
     
     public void setDefautlXOR()
@@ -41,6 +41,11 @@ public class Process {
         window.setNumberOfInputNeurons(2);
         window.setNumberOfHiddenNeurons(2);
         window.setNumberOfOutputNeurons(1);
+        window.setMomentum(50);
+        window.setLearningRate(50);
+        window.clearFileTextFields();
+        window.setRunButtonDisabledabled();
+        window.setEpochCount(1);
         
     }
     public void setDefautlParita()
@@ -48,14 +53,22 @@ public class Process {
         window.setNumberOfInputNeurons(8);
         window.setNumberOfHiddenNeurons(8);
         window.setNumberOfOutputNeurons(1);
-        window.setMomentum(1);
+        window.setMomentum(50);
+        window.setLearningRate(50);
+        window.clearFileTextFields();
+        window.setRunButtonDisabledabled();
+        window.setEpochCount(1);
     }
     public void setDefautlNieco()
     {
         window.setNumberOfInputNeurons(50);
         window.setNumberOfHiddenNeurons(20);
         window.setNumberOfOutputNeurons(1);
-        window.setMomentum(100);
+        window.setMomentum(50);
+        window.setLearningRate(50);
+        window.clearFileTextFields();
+        window.setRunButtonDisabledabled();
+        window.setEpochCount(1);
     }
     
     class ProblemSelectorActionListener implements ActionListener
@@ -86,6 +99,24 @@ public class Process {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println("Geronimo");
+            if(window.isReadyToTrain())
+            {
+                try {
+                    neuralNetwork.setLayers(window.getNumberOfInputNeurons(), window.getNumberOfHiddenNeurons(), window.getNumberOfOutputNeurons());
+                    neuralNetwork.setMomentum(window.getMomentum()/100);
+                    neuralNetwork.setLearningRate(window.getLearningRate()/100);
+                    neuralNetwork.setEpochCount(window.getEpochCount());
+                    neuralNetwork.inicializeNetwork();
+                    neuralNetwork.train(1);
+                    window.setRunButtonEnabled();
+                } catch (IOException ex) {
+                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else
+            {
+                window.showErrorMessage();
+            }
         }
     }
     
@@ -93,7 +124,14 @@ public class Process {
     {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Geronimo2");
+            if(window.isReadyToTest())
+            {
+                System.out.println("Geronimo2");
+            }
+            else
+            {
+                window.showErrorMessage();
+            }
         }
     }
     

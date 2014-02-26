@@ -8,6 +8,7 @@ package nn_1;
 
 import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -34,6 +35,7 @@ public class NN_window extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jFileChooser1 = new javax.swing.JFileChooser();
         jFileChooser2 = new javax.swing.JFileChooser();
+        jOptionPane1 = new javax.swing.JOptionPane();
         jPanel1 = new javax.swing.JPanel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
@@ -49,6 +51,12 @@ public class NN_window extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jTextField3 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jTextField5 = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -58,6 +66,9 @@ public class NN_window extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jTextField2 = new javax.swing.JTextField();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,7 +110,25 @@ public class NN_window extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+
+        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+
         jSlider1.setPaintLabels(true);
+        jSlider1.setToolTipText("lama");
+        jSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider1StateChanged(evt);
+            }
+        });
+
+        jSlider2.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider2StateChanged(evt);
+            }
+        });
 
         jLabel1.setText("Počet vstupných neurónov");
 
@@ -110,6 +139,14 @@ public class NN_window extends javax.swing.JFrame {
         jLabel4.setText("Rýchlosť učenia");
 
         jLabel5.setText("Momentový člen");
+
+        jTextField3.setText(Double.toString((double)jSlider1.getValue()/100));
+
+        jTextField4.setText(Double.toString((double)jSlider2.getValue()/100));
+
+        jLabel8.setText("Podmienka ukončenia trénovania");
+
+        jLabel9.setText("Počet epoch");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -127,9 +164,15 @@ public class NN_window extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(jLabel5))
                         .addGap(28, 28, 28)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField3))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,7 +180,15 @@ public class NN_window extends javax.swing.JFrame {
                         .addGap(29, 29, 29)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jSpinner2, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                            .addComponent(jSpinner3))))
+                            .addComponent(jSpinner3)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
+                            .addComponent(jTextField6))))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -155,20 +206,31 @@ public class NN_window extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(25, Short.MAX_VALUE))
+                    .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         jButton1.setText("Train");
 
         jButton2.setText("Run");
+        jButton2.setEnabled(false);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -181,6 +243,8 @@ public class NN_window extends javax.swing.JFrame {
             }
         });
 
+        jTextField1.setEditable(false);
+
         jLabel7.setText("Testovacia množina");
 
         jButton4.setText("Vybrať súbor");
@@ -189,6 +253,8 @@ public class NN_window extends javax.swing.JFrame {
                 jButton4ActionPerformed(evt);
             }
         });
+
+        jTextField2.setEditable(false);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -227,6 +293,24 @@ public class NN_window extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -246,6 +330,10 @@ public class NN_window extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(22, 22, 22))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -254,16 +342,15 @@ public class NN_window extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1)
+                        .addComponent(jButton2))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -278,6 +365,16 @@ public class NN_window extends javax.swing.JFrame {
         int returnVal = jFileChooser2.showOpenDialog(jButton4); 
         if(returnVal == javax.swing.JFileChooser.APPROVE_OPTION) jTextField2.setText(jFileChooser2.getSelectedFile().getName());
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
+        //jSlider1.setToolTipText(Integer.toString(jSlider1.getValue()));
+        System.out.println((double)jSlider1.getValue()/100);
+        jTextField3.setText(Double.toString((double)jSlider1.getValue()/100));
+    }//GEN-LAST:event_jSlider1StateChanged
+
+    private void jSlider2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider2StateChanged
+        jTextField4.setText(Double.toString((double)jSlider2.getValue()/100));
+    }//GEN-LAST:event_jSlider2StateChanged
 
     /**
      * @param args the command line arguments
@@ -299,19 +396,29 @@ public class NN_window extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JOptionPane jOptionPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JSlider jSlider2;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 
     public int getSelectedRadioButton()
@@ -341,11 +448,27 @@ public class NN_window extends javax.swing.JFrame {
     {
         jSpinner3.setValue(num);
     }
-    public void getMomentum(){};
-    public void getLearningRate(){};
-    public void getNumberOfInputNeurons(){};
-    public void getNumberOfHiddenNeurons(){};
-    public void getNumberOfOutputNeurons(){};
+    public int getMomentum()
+    {
+        return jSlider2.getValue();
+    }
+    public int getLearningRate()
+    {
+        return jSlider1.getValue();
+    }
+    public int getNumberOfInputNeurons()
+    {
+        return Integer.parseInt(jSpinner1.getValue().toString());
+    }
+    public int getNumberOfHiddenNeurons()
+    {
+        return Integer.parseInt(jSpinner2.getValue().toString());
+    }
+    
+    public int getNumberOfOutputNeurons()
+    {
+        return Integer.parseInt(jSpinner3.getValue().toString());
+    }
     
     public java.io.File getSelectedTrainFile()
     {
@@ -356,7 +479,47 @@ public class NN_window extends javax.swing.JFrame {
     {
         return jFileChooser2.getSelectedFile();
     }
+    
+    public Boolean isReadyToTrain()
+    {
+        return (!jTextField1.getText().isEmpty());
+    }
+    public Boolean isReadyToTest()
+    {
+        return (!jTextField2.getText().isEmpty());
+    }
         
+    public void showErrorMessage()
+    {
+        jOptionPane1.showMessageDialog(this, "error", "error", JOptionPane.ERROR_MESSAGE);
+    }
+    public void clearFileTextFields()
+    {
+        jTextField1.setText(null);
+        jTextField2.setText(null);
+        
+    }
+    
+    public void setRunButtonEnabled()
+    {
+        jButton2.setEnabled(true);
+    }
+    
+    public void setRunButtonDisabledabled()
+    {
+        jButton2.setEnabled(false);
+    }
+    
+    public void setEpochCount(int count)
+    {
+        jTextField6.setText(Integer.toString(count));
+    }
+    
+    public int getEpochCount()
+    {
+        return Integer.parseInt(jTextField6.getText());
+    }
+    
     void addProblemSelectorActionListener(ActionListener listenerForProblemSelector)
     {
         jRadioButton1.addActionListener(listenerForProblemSelector);
