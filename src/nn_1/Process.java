@@ -103,11 +103,24 @@ public class Process {
             {
                 try {
                     neuralNetwork.setLayers(window.getNumberOfInputNeurons(), window.getNumberOfHiddenNeurons(), window.getNumberOfOutputNeurons());
-                    neuralNetwork.setMomentum(window.getMomentum()/100);
-                    neuralNetwork.setLearningRate(window.getLearningRate()/100);
+                    neuralNetwork.setMomentum((double)window.getMomentum()/100);
+                    neuralNetwork.setLearningRate((double)window.getLearningRate()/100);
                     neuralNetwork.setEpochCount(window.getEpochCount());
-                    neuralNetwork.inicializeNetwork();
-                    neuralNetwork.train(1);
+                    switch(window.getSelectedRadioButton())
+                    {
+                        case 1:
+                            neuralNetwork.inicializeNetwork(1);
+                            break;
+                        case 2:
+                            neuralNetwork.inicializeNetwork(2);
+                            break;
+                        case 0:
+                        default:
+                            neuralNetwork.inicializeNetwork(0);
+                            break;
+                    }
+                    
+                    neuralNetwork.train(10);
                     window.setRunButtonEnabled();
                 } catch (IOException ex) {
                     Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
@@ -126,6 +139,12 @@ public class Process {
         public void actionPerformed(ActionEvent e) {
             if(window.isReadyToTest())
             {
+                try {
+                    neuralNetwork.beforeRun();
+                } catch (IOException ex) {
+                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                neuralNetwork.test();
                 System.out.println("Geronimo2");
             }
             else

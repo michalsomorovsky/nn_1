@@ -6,6 +6,8 @@
 
 package nn_1;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -17,25 +19,29 @@ public class Neuron {
     double netActivity;
     double errorSignal;
     double treshold;
+    double deltaTreshold;
     double[] weights;
     double[] deltaWeights;
     
-    public Neuron(int nextLayerNeuronsCount)
+    public Neuron(int perviousLayerNeuronsCount, Random rand)
     {
-        treshold = randomNumber();
-        weights = new double[nextLayerNeuronsCount];
-        deltaWeights = new double[nextLayerNeuronsCount];
-        for (int i = 0; i < nextLayerNeuronsCount; i++) {
-            weights[i] = randomNumber();
+        treshold = randomNumber(rand);
+        deltaTreshold = 0.0;
+        weights = new double[perviousLayerNeuronsCount];
+        deltaWeights = new double[perviousLayerNeuronsCount];
+        for (int i = 0; i < perviousLayerNeuronsCount; i++) {
+            weights[i] = randomNumber(rand);
             deltaWeights[i] = 0.0;
         }
     }
     
-    public double randomNumber()
+    public double randomNumber(Random rand)
     {
-        Random rand = new Random();
+        double min = -0.5;
+        double max = 0.5;
+        //Random rand = new Random(System.currentTimeMillis());
         double randomNum = rand.nextDouble();
-        randomNum = -2.5 + randomNum * ((2.5+2.5));
+        randomNum = min + randomNum * (max - min);
         return randomNum;
     }
     
