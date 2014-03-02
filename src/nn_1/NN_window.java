@@ -520,6 +520,14 @@ public class NN_window extends javax.swing.JFrame {
         return Integer.parseInt(jTextField6.getText());
     }
     
+    public double getStopCondition()
+    {
+        return Double.parseDouble(jTextField5.getText());
+    }
+    public void setStopCondition(double stopCondition)
+    {
+        jTextField5.setText(Double.toString(stopCondition));
+    }
     void addProblemSelectorActionListener(ActionListener listenerForProblemSelector)
     {
         jRadioButton1.addActionListener(listenerForProblemSelector);

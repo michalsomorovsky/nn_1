@@ -257,7 +257,7 @@ public class Network {
         return partial/2;
     }
     
-    public void train(int pocetEpoch)
+    public void train(double stopCondition)
     {
         double uspesnost = 0.0;
         double mse = 0.0;
@@ -275,6 +275,8 @@ public class Network {
             }
             System.out.println("Uspesnost: "+uspesnost/4);
             System.out.println("MSE: " + mse/trainData.size());
+            System.out.println("Epocha: " + i);
+            if((mse/trainData.size()) <= stopCondition) break;
             uspesnost = 0.0;
             mse = 0.0;
         }

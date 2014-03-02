@@ -46,6 +46,7 @@ public class Process {
         window.clearFileTextFields();
         window.setRunButtonDisabledabled();
         window.setEpochCount(1);
+        window.setStopCondition(0.009);
         
     }
     public void setDefautlParita()
@@ -120,7 +121,7 @@ public class Process {
                             break;
                     }
                     
-                    neuralNetwork.train(10);
+                    neuralNetwork.train(window.getStopCondition());
                     window.setRunButtonEnabled();
                 } catch (IOException ex) {
                     Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
