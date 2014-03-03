@@ -100,6 +100,8 @@ public class Process {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println("Geronimo");
+            ProgressPrinting pp = new ProgressPrinting();
+            
             if(window.isReadyToTrain())
             {
                 try {
@@ -120,7 +122,7 @@ public class Process {
                             neuralNetwork.inicializeNetwork(0);
                             break;
                     }
-                    
+                    //pp.start();
                     neuralNetwork.train(window.getStopCondition());
                     window.setRunButtonEnabled();
                 } catch (IOException ex) {
@@ -130,6 +132,11 @@ public class Process {
             else
             {
                 window.showErrorMessage();
+            }
+            try {
+                //pp.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -141,7 +148,20 @@ public class Process {
             if(window.isReadyToTest())
             {
                 try {
-                    neuralNetwork.beforeRun();
+                    switch(window.getSelectedRadioButton())
+                    {
+                        case 1:
+                            neuralNetwork.beforeRun(1);
+                            break;
+                        case 2:
+                            neuralNetwork.beforeRun(2);
+                            break;
+                        case 0:
+                        default:
+                            neuralNetwork.beforeRun(0);
+                            break;
+                    }
+                    
                 } catch (IOException ex) {
                     Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -176,6 +196,23 @@ public class Process {
                 System.out.println(window.getSelectedTestFile().getName());
                 neuralNetwork.setTestFile(window.getSelectedTestFile());
             } 
+        }
+    }
+    
+    class ProgressPrinting extends Thread
+    {
+        @Override
+        public void run()
+        {
+            while(true)
+            {
+                System.out.println("alive");
+                try {
+                    neuralNetwork.buffer.wait();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 }

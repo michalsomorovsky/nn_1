@@ -53,6 +53,8 @@ public class Network {
     
     public void inicializeNetwork(int type) throws FileNotFoundException, IOException
     {
+        
+        buffer = new StringBuffer();
         trainData = new ArrayList();
         FileReader reader = new FileReader(trainFile);
         BufferedReader bufferedReader = new BufferedReader(reader);
@@ -65,11 +67,17 @@ public class Network {
                 //treba upravit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 while((line = bufferedReader.readLine()) != null)
                 {
+                    double[] lineArray = new double[9];
                     chararray = line.toCharArray();
+                    int i=0;
                     for (char c : chararray) {
-                        
+                        lineArray[i] = (double)Character.getNumericValue(c);
+                        i++;
                     }
-                    trainData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1, 2)), Double.parseDouble(line.substring(2))});
+                    trainData.add(lineArray);
+                }
+                for (int i = 0; i < trainData.size(); i++) {
+                    System.out.println(trainData.get(i)[8]);
                 }
                 break;
             case 2://other
@@ -83,18 +91,44 @@ public class Network {
                 break;
         }
         
+        
     }
     
-    public void beforeRun() throws FileNotFoundException, IOException
+    public void beforeRun(int type) throws FileNotFoundException, IOException
     {
         testData = new ArrayList<>();
         FileReader reader = new FileReader(testFile);
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line = null;
-        while((line = bufferedReader.readLine()) != null)
+        char[] chararray;
+        double[] nieco;
+        switch(type)
         {
-            testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1))});
+            case 1://parity
+                //treba upravit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                while((line = bufferedReader.readLine()) != null)
+                {
+                    double[] lineArray = new double[8];
+                    chararray = line.toCharArray();
+                    int i=0;
+                    for (char c : chararray) {
+                        lineArray[i] = (double)Character.getNumericValue(c);
+                        i++;
+                    }
+                    testData.add(lineArray);
+                }
+                break;
+            case 2://other
+                break;
+            case 0://xor
+            default:
+                while((line = bufferedReader.readLine()) != null)
+                {
+                    testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1))});
+                }
+                break;
         }
+        
     }
     
     public double getLearningRate() 
@@ -156,7 +190,6 @@ public class Network {
             //System.out.println("IL " + i + " act: " + inputLayer[i].activity);
         }
         
-        
         //computing activities on neurons of hidden layer
         double sum = 0.0;
         for (int i = 0; i < hiddenLayer.length; i++) {
@@ -203,17 +236,12 @@ public class Network {
         
         //computing error signal on neurons of hidden layer
         double sum = 0.0;
-        /*for (int i = 0; i < hiddenLayer.length; i++) {
-            for (int j = 0; j < hiddenLayer[i].weights.length; j++) {
-                sum += outputLayer[j].errorSignal * hiddenLayer[i].weights[j];
-            }
-            hiddenLayer[i].errorSignal = dSigmoid(hiddenLayer[i].netActivity) * sum;
-        }*/
         for (int i = 0; i < hiddenLayer.length; i++) {
             for (int j = 0; j < outputLayer.length; j++) {
                 sum += outputLayer[j].errorSignal * outputLayer[j].weights[i];
             }
             hiddenLayer[i].errorSignal = dSigmoid(hiddenLayer[i].netActivity) * sum;
+            sum = 0.0;
         }
         
         //computing changes of weights on neurons of hidden layer
@@ -261,19 +289,25 @@ public class Network {
     {
         double uspesnost = 0.0;
         double mse = 0.0;
+        Random rand = new Random(System.currentTimeMillis());
+        int trainDataLength = trainData.get(0).length - 1;
         for(int i=0; i<epochCount; i++)
         {
-            Collections.shuffle(trainData);
+            Collections.shuffle(trainData, rand);
             for (int j = 0; j < trainData.size(); j++) {
                 feedForward(trainData.get(j));
                 backPropagation(trainData.get(j));
                 //buffer.append(output());
-                if(trainData.get(j)[2] == roundOutput(output())) uspesnost +=1;
-                mse += mse(new double[] {trainData.get(j)[2]});
-                System.out.println("/////////////////");
+                if(trainData.get(j)[trainDataLength] == roundOutput(output())) uspesnost +=1;
+                mse += mse(new double[] {trainData.get(j)[trainDataLength]});
+                //System.out.println("/////////////////");
                 
             }
-            System.out.println("Uspesnost: "+uspesnost/4);
+            buffer.append("Uspesnost: "+uspesnost/trainData.size());
+            buffer.append("MSE: " + mse/trainData.size());
+            buffer.append("Epocha: " + i);
+            //buffer.notify();
+            System.out.println("Uspesnost: "+uspesnost/trainData.size());
             System.out.println("MSE: " + mse/trainData.size());
             System.out.println("Epocha: " + i);
             if((mse/trainData.size()) <= stopCondition) break;
