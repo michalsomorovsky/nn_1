@@ -133,11 +133,11 @@ public class Process {
             {
                 window.showErrorMessage();
             }
-            try {
+            /*try {
                 //pp.join();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }*/
         }
     }
     
