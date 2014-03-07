@@ -45,7 +45,7 @@ public class Process {
         window.setLearningRate(50);
         window.clearFileTextFields();
         window.setRunButtonDisabledabled();
-        window.setEpochCount(1);
+        window.setEpochCount(10000);
         window.setStopCondition(0.009);
         
     }
@@ -54,22 +54,24 @@ public class Process {
         window.setNumberOfInputNeurons(8);
         window.setNumberOfHiddenNeurons(8);
         window.setNumberOfOutputNeurons(1);
-        window.setMomentum(50);
-        window.setLearningRate(50);
+        window.setMomentum(80);
+        window.setLearningRate(10);
         window.clearFileTextFields();
         window.setRunButtonDisabledabled();
-        window.setEpochCount(1);
+        window.setEpochCount(100000);
+        window.setStopCondition(0.0001);
     }
     public void setDefautlNieco()
     {
-        window.setNumberOfInputNeurons(50);
-        window.setNumberOfHiddenNeurons(20);
-        window.setNumberOfOutputNeurons(1);
-        window.setMomentum(50);
-        window.setLearningRate(50);
+        window.setNumberOfInputNeurons(4);
+        window.setNumberOfHiddenNeurons(4);
+        window.setNumberOfOutputNeurons(3);
+        window.setMomentum(70);
+        window.setLearningRate(10);
         window.clearFileTextFields();
         window.setRunButtonDisabledabled();
-        window.setEpochCount(1);
+        window.setEpochCount(10000);
+        window.setStopCondition(0.0001);
     }
     
     class ProblemSelectorActionListener implements ActionListener
@@ -99,35 +101,41 @@ public class Process {
     {
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Geronimo");
-            ProgressPrinting pp = new ProgressPrinting();
-            
+            InicializationAndTraining iat = new InicializationAndTraining();
+            OutputPrinting op = new OutputPrinting();
             if(window.isReadyToTrain())
             {
-                try {
+               
+                    //pp.start();
                     neuralNetwork.setLayers(window.getNumberOfInputNeurons(), window.getNumberOfHiddenNeurons(), window.getNumberOfOutputNeurons());
                     neuralNetwork.setMomentum((double)window.getMomentum()/100);
                     neuralNetwork.setLearningRate((double)window.getLearningRate()/100);
                     neuralNetwork.setEpochCount(window.getEpochCount());
-                    switch(window.getSelectedRadioButton())
+                    iat.start();
+                    op.start();
+                    /*switch(window.getSelectedRadioButton())
                     {
                         case 1:
+                            pp.start();
+                            pp2.start();
                             neuralNetwork.inicializeNetwork(1);
+                            neuralNetwork.train(window.getStopCondition());
+                            //while(neuralNetwork.buffer.length() > 0) window.printText("lama\n");
+                            
                             break;
                         case 2:
                             neuralNetwork.inicializeNetwork(2);
+                            neuralNetwork.trainIsis(window.getStopCondition());
                             break;
                         case 0:
                         default:
                             neuralNetwork.inicializeNetwork(0);
+                            neuralNetwork.train(window.getStopCondition());
                             break;
-                    }
-                    //pp.start();
-                    neuralNetwork.train(window.getStopCondition());
-                    window.setRunButtonEnabled();
-                } catch (IOException ex) {
-                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    }*/
+                   
+                    
+               
             }
             else
             {
@@ -145,28 +153,10 @@ public class Process {
     {
         @Override
         public void actionPerformed(ActionEvent e) {
+            Running run = new Running();
             if(window.isReadyToTest())
             {
-                try {
-                    switch(window.getSelectedRadioButton())
-                    {
-                        case 1:
-                            neuralNetwork.beforeRun(1);
-                            break;
-                        case 2:
-                            neuralNetwork.beforeRun(2);
-                            break;
-                        case 0:
-                        default:
-                            neuralNetwork.beforeRun(0);
-                            break;
-                    }
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                neuralNetwork.test();
-                System.out.println("Geronimo2");
+                run.start();
             }
             else
             {
@@ -181,7 +171,6 @@ public class Process {
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) 
             {
-                System.out.println(window.getSelectedTrainFile().getName());
                 neuralNetwork.setTrainFile(window.getSelectedTrainFile());
             } 
         }
@@ -193,26 +182,83 @@ public class Process {
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) 
             {
-                System.out.println(window.getSelectedTestFile().getName());
                 neuralNetwork.setTestFile(window.getSelectedTestFile());
             } 
         }
     }
     
-    class ProgressPrinting extends Thread
+    class InicializationAndTraining extends Thread
+    {
+        @Override
+        public void run() {
+            switch (window.getSelectedRadioButton()) {
+                case 1:
+                    try {
+                        neuralNetwork.inicializeNetwork(1);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    neuralNetwork.train(window.getStopCondition()); 
+                    break;
+                case 2:
+                    try {
+                        neuralNetwork.inicializeNetwork(2);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    neuralNetwork.trainIsis(window.getStopCondition());
+                    break;
+                case 0:
+                default:
+                    try {
+                        neuralNetwork.inicializeNetwork(0);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    neuralNetwork.train(window.getStopCondition());
+                    break;
+            }
+            window.setRunButtonEnabled();
+        }
+    }
+    
+    class OutputPrinting extends Thread
     {
         @Override
         public void run()
         {
-            while(true)
-            {
-                System.out.println("alive");
-                try {
-                    neuralNetwork.buffer.wait();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            while(true) {
+                window.printText(neuralNetwork.fifo.poll());
             }
+            
+        }
+    }
+    
+    class Running extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                switch (window.getSelectedRadioButton()) {
+                    case 1:
+                        neuralNetwork.beforeRun(1);
+                        neuralNetwork.test(1);
+                        break;
+                    case 2:
+                        neuralNetwork.beforeRun(2);
+                        neuralNetwork.test(2);
+                        break;
+                    case 0:
+                    default:
+                        neuralNetwork.beforeRun(0);
+                        neuralNetwork.test(0);
+                        break;
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
     }
 }

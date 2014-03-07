@@ -11,6 +11,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultCaret;
 
 /**
  *
@@ -83,10 +84,10 @@ public class NN_window extends javax.swing.JFrame {
         jRadioButton1.setText("XOR");
 
         buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("parita");
+        jRadioButton2.setText("Parita");
 
         buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText("jRadioButton3");
+        jRadioButton3.setText("Iris");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -329,7 +330,7 @@ public class NN_window extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addGap(30, 30, 30)
                         .addComponent(jButton2)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -531,6 +532,14 @@ public class NN_window extends javax.swing.JFrame {
     {
         jTextField5.setText(Double.toString(stopCondition));
     }
+    
+    public void printText(String text)
+    {
+        jTextArea1.append(text);
+        jTextArea1.setCaretPosition(jTextArea1.getDocument().getLength());
+        
+    }
+    
     void addProblemSelectorActionListener(ActionListener listenerForProblemSelector)
     {
         jRadioButton1.addActionListener(listenerForProblemSelector);
