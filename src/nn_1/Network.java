@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  *
@@ -37,10 +38,15 @@ public class Network {
     StringBuffer buffer;
     Queue<String> fifo;
    
+    public Network()
+    {
+        fifo = new ConcurrentLinkedQueue<>();
+    }
+    
     public void setLayers(int inpulLayerSize, int hiddenLayerSize, int outputLayerSize)
     {
         buffer = new StringBuffer();
-        fifo = new ConcurrentLinkedQueue<>();
+        
         Random rand = new Random(System.currentTimeMillis());
         this.inputLayer = new Neuron[inpulLayerSize];
         this.hiddenLayer = new Neuron[hiddenLayerSize];
@@ -63,7 +69,6 @@ public class Network {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line = null;
         char[] chararray;
-        double[] nieco;
         String[] stringarray;
         switch(type)
         {
@@ -80,7 +85,7 @@ public class Network {
                     trainData.add(lineArray);
                 }
                 break;
-            case 2://other
+            case 2://Iris
                 while((line = bufferedReader.readLine()) != null)
                 {
                     double[] lineArray = new double[7];
@@ -117,15 +122,12 @@ public class Network {
                 }
                 break;
             case 0://xor
-            default:
                 while((line = bufferedReader.readLine()) != null)
                 {
                     trainData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1, 2)), Double.parseDouble(line.substring(2))});
                 }
                 break;
         }
-        
-        
     }
     
     public void beforeRun(int type) throws FileNotFoundException, IOException
@@ -135,7 +137,6 @@ public class Network {
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line = null;
         char[] chararray;
-        double[] nieco;
         String[] stringarray;
         switch(type)
         {
@@ -143,7 +144,7 @@ public class Network {
                 testData = new ArrayList<>();
                 while((line = bufferedReader.readLine()) != null)
                 {
-                    double[] lineArray = new double[8];
+                    double[] lineArray = new double[9];
                     chararray = line.toCharArray();
                     int i=0;
                     for (char c : chararray) {
@@ -189,7 +190,7 @@ public class Network {
                 testData = new ArrayList<>();
                 while((line = bufferedReader.readLine()) != null)
                 {
-                    testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1))});
+                    testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1, 2)), Double.parseDouble(line.substring(2))});
                 }
                 break;
         }
@@ -231,20 +232,35 @@ public class Network {
         this.epochCount = count;
     }
     
-    public double sigmoid(double netOutput)
+    private double sigmoid(double netOutput)
     {
         return (1 / (1 + Math.exp((-1) * netOutput)));
     }
     
-    public double dSigmoid(double netOutput)
+    private double dSigmoid(double netOutput)
     {
         double aktivity = sigmoid(netOutput);
         return aktivity * (1 - aktivity);
     }
     
-    public double output(int index)
+    private double output(int index)
     {
         return outputLayer[index].activity;
+    }
+    
+    public Boolean isFifoEmpty()
+    {
+        return fifo.isEmpty();
+    }
+    
+    public String fifoPoll()
+    {
+        return fifo.poll();
+    }
+    
+    public Queue getFifo()
+    {
+        return fifo;
     }
     
     public void feedForward(double[] inputData)
@@ -334,14 +350,14 @@ public class Network {
         }
     }
     
-    public double roundOutput(double output)
+    private double roundOutput(double output)
     {
         if(output >= 0.7 && output <= 1.0) return 1;
         else if(output >= 0.0 && output <= 0.3) return 0;
         else return output;
     }
     
-    public double mse(double[] data)
+    private double mse(double[] data)
     {
         double partial = 0.0;
         for (int i = 0; i < outputLayer.length; i++) {
@@ -363,16 +379,20 @@ public class Network {
                 feedForward(trainData.get(j));
                 backPropagation(new double[] {trainData.get(j)[trainDataLength]});
                 //buffer.append(output());
-                if(trainData.get(j)[trainDataLength] == roundOutput(output(0))) uspesnost +=1;
-                mse += mse(new double[] {trainData.get(j)[trainDataLength]});
-                //System.out.println("/////////////////");
-                
+                /*if(trainData.get(j)[trainDataLength] == roundOutput(output(0))) uspesnost++;
+                mse += mse(new double[] {trainData.get(j)[trainDataLength]});*/
             }
-            /*buffer.append("Uspesnost: "+uspesnost/trainData.size());
-            buffer.append("MSE: " + mse/trainData.size());
-            buffer.append("Epocha: " + i);*/
-            fifo.add("Uspesnost: "+uspesnost/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
-            //buffer.notify();
+            for (int j = 0; j < trainData.size(); j++) {
+                feedForward(trainData.get(j));
+                if(trainData.get(j)[trainDataLength] == roundOutput(output(0))) uspesnost++;
+                mse += mse(new double[] {trainData.get(j)[trainDataLength]});
+            }
+            fifo.offer("Uspesnost: "+uspesnost/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
+            /*synchronized (fifo)
+            {
+                fifo.notifyAll();
+            }*/
+            
             /*System.out.println("Uspesnost: "+uspesnost/trainData.size());
             System.out.println("MSE: " + mse/trainData.size());
             System.out.println("Epocha: " + i);*/
@@ -386,10 +406,7 @@ public class Network {
     {
         double uspesnost = 0.0;
         double mse = 0.0;
-        Random rand = new Random(System.currentTimeMillis());
-        int trainDataLength = trainData.get(0).length - 1;
-        ArrayList trainDataSubset;
-        ArrayList validationData;
+        Random rand = new Random(System.currentTimeMillis());        
         for(int i=0; i<epochCount; i++)
         {
             Collections.shuffle(trainData, rand);
@@ -416,25 +433,26 @@ public class Network {
     
     public void test(int type) {
         String output = new String();
-        
+        int testDataLength = testData.get(0).length - 1;
         output += "Vypocitany vystup \t zelany vystup\n";
+        double uspesnost =0.0;
         for (int i = 0; i < testData.size(); i++) {
             feedForward(testData.get(i));
-            
+
             switch (type) {
                 case 0:
                 case 1:
-                    output += roundOutput(output(0)) + "\n";
+                    output += roundOutput(output(0)) + "\t" + testData.get(i)[testDataLength] + "\n";
+                    if(roundOutput(output(0)) == testData.get(i)[testDataLength]) uspesnost++;
                     break;
                 case 2:
                     String computedOutput = new String();
-        String desiredOutput = new String();
+                    String desiredOutput = new String();
                     for (int j = 0; j < this.outputLayer.length; j++) {
                         computedOutput += roundOutput(output(j));
                         //output += roundOutput(output(j)) + " ";
                     }
-                    switch(computedOutput)
-                    {
+                    switch (computedOutput) {
                         case "1.00.00.0":
                             output += "Iris-setosa";
                             break;
@@ -445,14 +463,13 @@ public class Network {
                             output += "Iris-virginica";
                             break;
                         default:
-                            output += "nezname";        
+                            output += "nezname";
                     }
                     output += "\t\t";
                     for (int j = 0; j < this.outputLayer.length; j++) {
                         desiredOutput += testData.get(i)[j + 4];
                     }
-                    switch(desiredOutput)
-                    {
+                    switch (desiredOutput) {
                         case "1.00.00.0":
                             output += "Iris-setosa";
                             break;
@@ -463,16 +480,20 @@ public class Network {
                             output += "Iris-virginica";
                             break;
                         default:
-                            output += "nezname";        
+                            output += "nezname";
                     }
                     output += "\n";
                     break;
             }
 
-            
             //System.out.println("");
         }
-        fifo.add(output);
+        output += "Uspesnost testu: " + uspesnost/testData.size() + "\n";
+        fifo.offer(output);
+        /*synchronized (fifo)
+         {
+         fifo.notifyAll();
+         }*/
 
     }
 }

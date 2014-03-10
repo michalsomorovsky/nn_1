@@ -9,7 +9,6 @@ package nn_1;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -20,11 +19,13 @@ import javax.swing.JFileChooser;
  */
 public class Process {
     
-    Network neuralNetwork;
-    NN_window window;
+    private Network neuralNetwork;
+    private NN_window window;
+    private OutputPrinting op;
     
     public Process(Network neuralNetwork, NN_window window)
     {
+        this.op = new OutputPrinting();
         this.neuralNetwork = neuralNetwork;
         this.window = window;
         this.window.addProblemSelectorActionListener(new ProblemSelectorActionListener());
@@ -33,10 +34,14 @@ public class Process {
         this.window.addFileChooserActionListener(new FileChooserActionListener());
         this.window.addFileChooserActionListener2(new FileChooserActionListener2());
         this.setDefautlXOR();
-        
     }
     
-    public void setDefautlXOR()
+    public void start()
+    {
+        this.op.start();
+    }
+    
+    private void setDefautlXOR()
     {
         window.setNumberOfInputNeurons(2);
         window.setNumberOfHiddenNeurons(2);
@@ -49,7 +54,7 @@ public class Process {
         window.setStopCondition(0.009);
         
     }
-    public void setDefautlParita()
+    private void setDefautlParita()
     {
         window.setNumberOfInputNeurons(8);
         window.setNumberOfHiddenNeurons(8);
@@ -61,7 +66,7 @@ public class Process {
         window.setEpochCount(100000);
         window.setStopCondition(0.0001);
     }
-    public void setDefautlNieco()
+    private void setDefautlIris()
     {
         window.setNumberOfInputNeurons(4);
         window.setNumberOfHiddenNeurons(4);
@@ -88,7 +93,7 @@ public class Process {
                     setDefautlParita();
                     break;
                 case 2:
-                    setDefautlNieco();
+                    setDefautlIris();
                     break;
                 default:
                     setDefautlXOR();
@@ -102,17 +107,13 @@ public class Process {
         @Override
         public void actionPerformed(ActionEvent e) {
             InicializationAndTraining iat = new InicializationAndTraining();
-            OutputPrinting op = new OutputPrinting();
             if(window.isReadyToTrain())
             {
-               
-                    //pp.start();
                     neuralNetwork.setLayers(window.getNumberOfInputNeurons(), window.getNumberOfHiddenNeurons(), window.getNumberOfOutputNeurons());
                     neuralNetwork.setMomentum((double)window.getMomentum()/100);
                     neuralNetwork.setLearningRate((double)window.getLearningRate()/100);
                     neuralNetwork.setEpochCount(window.getEpochCount());
                     iat.start();
-                    op.start();
                     /*switch(window.getSelectedRadioButton())
                     {
                         case 1:
@@ -133,19 +134,11 @@ public class Process {
                             neuralNetwork.train(window.getStopCondition());
                             break;
                     }*/
-                   
-                    
-               
             }
             else
             {
-                window.showErrorMessage();
+                window.showErrorMessage("Nebol zvolený súbor s trénovacími dátami");
             }
-            /*try {
-                //pp.join();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
         }
     }
     
@@ -160,7 +153,7 @@ public class Process {
             }
             else
             {
-                window.showErrorMessage();
+                window.showErrorMessage("Nebol zvolený súbor s testovacími dátami");
             }
         }
     }
@@ -187,10 +180,12 @@ public class Process {
         }
     }
     
-    class InicializationAndTraining extends Thread
-    {
+    class InicializationAndTraining extends Thread {
+
         @Override
         public void run() {
+            window.clearText();
+            window.setTrainButtonDisabledabled();
             switch (window.getSelectedRadioButton()) {
                 case 1:
                     try {
@@ -198,7 +193,7 @@ public class Process {
                     } catch (IOException ex) {
                         Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    neuralNetwork.train(window.getStopCondition()); 
+                    neuralNetwork.train(window.getStopCondition());
                     break;
                 case 2:
                     try {
@@ -218,6 +213,7 @@ public class Process {
                     neuralNetwork.train(window.getStopCondition());
                     break;
             }
+            window.setTrainButtonEnabled();
             window.setRunButtonEnabled();
         }
     }
@@ -228,9 +224,13 @@ public class Process {
         public void run()
         {
             while(true) {
-                window.printText(neuralNetwork.fifo.poll());
+                if(!neuralNetwork.isFifoEmpty()) window.printText(neuralNetwork.fifoPoll());
+                else try {
+                    sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-            
         }
     }
     
@@ -258,7 +258,6 @@ public class Process {
             } catch (IOException ex) {
                 Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
         }
     }
 }

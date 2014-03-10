@@ -7,11 +7,7 @@
 package nn_1;
 
 import java.awt.event.ActionListener;
-import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.DefaultCaret;
 
 /**
  *
@@ -76,6 +72,7 @@ public class NN_window extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("ANN simulator");
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -313,7 +310,9 @@ public class NN_window extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -353,8 +352,8 @@ public class NN_window extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addComponent(jButton2))
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -372,7 +371,6 @@ public class NN_window extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
-        //jSlider1.setToolTipText(Integer.toString(jSlider1.getValue()));
         jTextField3.setText(Double.toString((double)jSlider1.getValue()/100));
     }//GEN-LAST:event_jSlider1StateChanged
 
@@ -493,9 +491,9 @@ public class NN_window extends javax.swing.JFrame {
         return (!jTextField2.getText().isEmpty());
     }
         
-    public void showErrorMessage()
+    public void showErrorMessage(String message)
     {
-        jOptionPane1.showMessageDialog(this, "error", "error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
     public void clearFileTextFields()
     {
@@ -512,6 +510,16 @@ public class NN_window extends javax.swing.JFrame {
     public void setRunButtonDisabledabled()
     {
         jButton2.setEnabled(false);
+    }
+    
+    public void setTrainButtonEnabled()
+    {
+        jButton1.setEnabled(true);
+    }
+    
+    public void setTrainButtonDisabledabled()
+    {
+        jButton1.setEnabled(false);
     }
     
     public void setEpochCount(int count)
@@ -538,6 +546,10 @@ public class NN_window extends javax.swing.JFrame {
         jTextArea1.append(text);
         jTextArea1.setCaretPosition(jTextArea1.getDocument().getLength());
         
+    }
+    public void clearText()
+    {
+        jTextArea1.setText(null);
     }
     
     void addProblemSelectorActionListener(ActionListener listenerForProblemSelector)

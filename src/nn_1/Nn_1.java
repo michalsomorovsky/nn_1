@@ -19,6 +19,7 @@ public class Nn_1 {
         NN_window window = new NN_window();
         Network net = new Network();
         Process process = new Process(net, window);
+        process.start();
         window.setVisible(true);
     }
     
