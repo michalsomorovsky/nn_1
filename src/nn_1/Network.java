@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  *
@@ -490,10 +489,5 @@ public class Network {
         }
         output += "Uspesnost testu: " + uspesnost/testData.size() + "\n";
         fifo.offer(output);
-        /*synchronized (fifo)
-         {
-         fifo.notifyAll();
-         }*/
-
     }
 }

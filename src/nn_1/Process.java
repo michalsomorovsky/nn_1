@@ -49,7 +49,7 @@ public class Process {
         window.setMomentum(50);
         window.setLearningRate(50);
         window.clearFileTextFields();
-        window.setRunButtonDisabledabled();
+        window.setRunButtonDisabled();
         window.setEpochCount(10000);
         window.setStopCondition(0.009);
         
@@ -62,7 +62,7 @@ public class Process {
         window.setMomentum(80);
         window.setLearningRate(10);
         window.clearFileTextFields();
-        window.setRunButtonDisabledabled();
+        window.setRunButtonDisabled();
         window.setEpochCount(100000);
         window.setStopCondition(0.0001);
     }
@@ -74,7 +74,7 @@ public class Process {
         window.setMomentum(70);
         window.setLearningRate(10);
         window.clearFileTextFields();
-        window.setRunButtonDisabledabled();
+        window.setRunButtonDisabled();
         window.setEpochCount(10000);
         window.setStopCondition(0.0001);
     }
@@ -185,7 +185,8 @@ public class Process {
         @Override
         public void run() {
             window.clearText();
-            window.setTrainButtonDisabledabled();
+            window.setTrainButtonDisabled();
+            window.setRunButtonDisabled();
             switch (window.getSelectedRadioButton()) {
                 case 1:
                     try {

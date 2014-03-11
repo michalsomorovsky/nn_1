@@ -507,7 +507,7 @@ public class NN_window extends javax.swing.JFrame {
         jButton2.setEnabled(true);
     }
     
-    public void setRunButtonDisabledabled()
+    public void setRunButtonDisabled()
     {
         jButton2.setEnabled(false);
     }
@@ -517,7 +517,7 @@ public class NN_window extends javax.swing.JFrame {
         jButton1.setEnabled(true);
     }
     
-    public void setTrainButtonDisabledabled()
+    public void setTrainButtonDisabled()
     {
         jButton1.setEnabled(false);
     }
