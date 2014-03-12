@@ -19,9 +19,9 @@ import javax.swing.JFileChooser;
  */
 public class Process {
     
-    private Network neuralNetwork;
-    private NN_window window;
-    private OutputPrinting op;
+    private final Network neuralNetwork;
+    private final NN_window window;
+    private final OutputPrinting op;
     
     public Process(Network neuralNetwork, NN_window window)
     {
@@ -36,6 +36,7 @@ public class Process {
         this.setDefautlXOR();
     }
     
+    //starting output printing thread
     public void start()
     {
         this.op.start();
@@ -79,6 +80,7 @@ public class Process {
         window.setStopCondition(0.0001);
     }
     
+    //setting defaults
     class ProblemSelectorActionListener implements ActionListener
     {
 
@@ -102,6 +104,7 @@ public class Process {
         }
     }
     
+    //starting training thread
     class TrainingActionListener implements ActionListener
     {
         @Override
@@ -114,26 +117,6 @@ public class Process {
                     neuralNetwork.setLearningRate((double)window.getLearningRate()/100);
                     neuralNetwork.setEpochCount(window.getEpochCount());
                     iat.start();
-                    /*switch(window.getSelectedRadioButton())
-                    {
-                        case 1:
-                            pp.start();
-                            pp2.start();
-                            neuralNetwork.inicializeNetwork(1);
-                            neuralNetwork.train(window.getStopCondition());
-                            //while(neuralNetwork.buffer.length() > 0) window.printText("lama\n");
-                            
-                            break;
-                        case 2:
-                            neuralNetwork.inicializeNetwork(2);
-                            neuralNetwork.trainIsis(window.getStopCondition());
-                            break;
-                        case 0:
-                        default:
-                            neuralNetwork.inicializeNetwork(0);
-                            neuralNetwork.train(window.getStopCondition());
-                            break;
-                    }*/
             }
             else
             {
@@ -142,12 +125,13 @@ public class Process {
         }
     }
     
+    //startinf testing thread
     class RuningActionListener implements ActionListener
     {
         @Override
         public void actionPerformed(ActionEvent e) {
             Running run = new Running();
-            if(window.isReadyToTest())
+            if(window.isReadyToTest() || window.getSelectedRadioButton() == 2)
             {
                 run.start();
             }
@@ -158,6 +142,7 @@ public class Process {
         }
     }
     
+    //selecting train file
     class FileChooserActionListener implements ActionListener
     {
         @Override
@@ -169,6 +154,7 @@ public class Process {
         }
     }
     
+    //selecting test file
     class FileChooserActionListener2 implements ActionListener
     {
         @Override
@@ -180,6 +166,7 @@ public class Process {
         }
     }
     
+    //training
     class InicializationAndTraining extends Thread {
 
         @Override
@@ -219,6 +206,7 @@ public class Process {
         }
     }
     
+    //printing statistics
     class OutputPrinting extends Thread
     {
         @Override
@@ -235,6 +223,7 @@ public class Process {
         }
     }
     
+    //testing
     class Running extends Thread {
 
         @Override
@@ -246,7 +235,7 @@ public class Process {
                         neuralNetwork.test(1);
                         break;
                     case 2:
-                        neuralNetwork.beforeRun(2);
+                        //neuralNetwork.beforeRun(2);
                         neuralNetwork.test(2);
                         break;
                     case 0:

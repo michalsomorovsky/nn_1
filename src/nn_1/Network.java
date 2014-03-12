@@ -26,15 +26,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Network {
     double learningRate;
     double momentum;
+    //layer of input "neurons"
     Neuron[] inputLayer;
+    //layer of hidden neurons
     Neuron[] hiddenLayer;
+    //layer of output neurons
     Neuron[] outputLayer;
+    //file with train data
     File trainFile;
+    //file with test data
     File testFile;
     ArrayList<double[]> trainData;
     ArrayList<double[]> testData;
     int epochCount;
-    StringBuffer buffer;
+    //queue for output statistics
     Queue<String> fifo;
    
     public Network()
@@ -42,10 +47,9 @@ public class Network {
         fifo = new ConcurrentLinkedQueue<>();
     }
     
+    //setting up network
     public void setLayers(int inpulLayerSize, int hiddenLayerSize, int outputLayerSize)
-    {
-        buffer = new StringBuffer();
-        
+    {        
         Random rand = new Random(System.currentTimeMillis());
         this.inputLayer = new Neuron[inpulLayerSize];
         this.hiddenLayer = new Neuron[hiddenLayerSize];
@@ -60,7 +64,7 @@ public class Network {
             outputLayer[i] = new Neuron(hiddenLayerSize, rand);
         }        
     }
-    
+    //preparing train data from selected file
     public void inicializeNetwork(int type) throws FileNotFoundException, IOException
     {
         trainData = new ArrayList();
@@ -93,6 +97,10 @@ public class Network {
                     for (String c : stringarray) {
                         if(i>=4)
                         {
+                            //coding output
+                            //Iris-setosa = 100
+                            //Iris-versicolor = 010
+                            //Iris-virginica = 001
                             switch(c)
                             {
                                 case "Iris-setosa":
@@ -111,6 +119,7 @@ public class Network {
                     }
                     trainData.add(lineArray);
                 }
+                //spliting train data and choosing data for testing
                 Collections.shuffle(trainData);
                 testData = new ArrayList<>();
                 for (int j = 0; j < 15; j++) {
@@ -129,14 +138,13 @@ public class Network {
         }
     }
     
+    //preparing test data from selected file
     public void beforeRun(int type) throws FileNotFoundException, IOException
     {
-        
         FileReader reader = new FileReader(testFile);
         BufferedReader bufferedReader = new BufferedReader(reader);
         String line = null;
         char[] chararray;
-        String[] stringarray;
         switch(type)
         {
             case 1://parity
@@ -154,35 +162,6 @@ public class Network {
                 }
                 break;
             case 2://other
-                /*while((line = bufferedReader.readLine()) != null)
-                {
-                    double[] lineArray = new double[7];
-                    stringarray = line.split(",");
-                    int i=0;
-                    for (String c : stringarray) {
-                        if(i>=4)
-                        {
-                            switch(c)
-                            {
-                                case "Iris-setosa":
-                                    if(i==4) lineArray[i] = 1.0;
-                                    else lineArray[i] = 0.0;
-                                    break;
-                                case "Iris-versicolor":
-                                    if(i==5) lineArray[i] = 1.0;
-                                    else lineArray[i] = 0.0;
-                                    break;
-                                case "Iris-virginica":
-                                    if(i==6) lineArray[i] = 1.0;
-                                    else lineArray[i] = 0.0;
-                                    break;
-                            }
-                        }
-                        else lineArray[i] = Double.parseDouble(c);
-                        i++;
-                    }
-                    testData.add(lineArray);
-                }*/
                 break;
             case 0://xor
             default:
@@ -195,7 +174,7 @@ public class Network {
         }
         
     }
-    
+    // <editor-fold defaultstate="collapsed" desc="getters / setters"> 
     public double getLearningRate() 
     {
         return learningRate;
@@ -230,22 +209,27 @@ public class Network {
     {
         this.epochCount = count;
     }
+    //</editor-fold>
     
+    //sigmoid activation function
     private double sigmoid(double netOutput)
     {
         return (1 / (1 + Math.exp((-1) * netOutput)));
     }
     
+    //derivation of sigmoid activation function
     private double dSigmoid(double netOutput)
     {
         double aktivity = sigmoid(netOutput);
         return aktivity * (1 - aktivity);
     }
     
+    //output of network from selected output neuron
     private double output(int index)
     {
         return outputLayer[index].activity;
     }
+    
     
     public Boolean isFifoEmpty()
     {
@@ -267,7 +251,6 @@ public class Network {
         //setting input values
         for (int i = 0; i < inputLayer.length; i++) {
             inputLayer[i].activity = inputData[i];
-            //System.out.println("IL " + i + " act: " + inputLayer[i].activity);
         }
         
         //computing activities on neurons of hidden layer
@@ -275,15 +258,11 @@ public class Network {
         for (int i = 0; i < hiddenLayer.length; i++) {
             for (int j = 0; j < inputLayer.length; j++) {
                 sum += inputLayer[j].activity * hiddenLayer[i].weights[j];
-                //System.out.println("HL waha " + i + " " + j + " = " + hiddenLayer[i].weights[j]);
             }
             //adding treshold
             sum += hiddenLayer[i].treshold;
-            //System.out.println("HL prah " + i + " = " + hiddenLayer[i].treshold);
             hiddenLayer[i].netActivity = sum;
             hiddenLayer[i].activity = sigmoid(sum);
-            //System.out.println("HL " + i + " netact: " + hiddenLayer[i].netActivity);
-            //System.out.println("HL " + i + " act: " + hiddenLayer[i].activity);
             sum = 0.0;
         }
         
@@ -292,15 +271,11 @@ public class Network {
         for (int i = 0; i < outputLayer.length; i++) {
             for (int j = 0; j < hiddenLayer.length; j++) {
                 sum += hiddenLayer[j].activity * outputLayer[i].weights[j];
-                //System.out.println("OL waha " + i + " " + j + " = " + outputLayer[i].weights[j]);
             }
             //adding treshold
             sum += outputLayer[i].treshold;
-            //System.out.println("OL prah " + i + " = " + outputLayer[i].treshold);
             outputLayer[i].netActivity = sum;
             outputLayer[i].activity = sigmoid(sum);
-            //System.out.println("OL " + i + " netact: " + outputLayer[i].netActivity);
-            //System.out.println("OL " + i + " act: " + outputLayer[i].activity);
             sum = 0.0;
         }
     }
@@ -329,23 +304,18 @@ public class Network {
             for (int j = 0; j < hiddenLayer.length; j++) {
                 outputLayer[i].deltaWeights[j] = learningRate * outputLayer[i].errorSignal * hiddenLayer[j].activity + momentum * outputLayer[i].deltaWeights[j];
                 outputLayer[i].weights[j] += outputLayer[i].deltaWeights[j];
-                //System.out.println("DELTAOLw " + i + " " + j + " " + outputLayer[i].deltaWeights[j]);
-                //System.out.println("OLw " + i + " " + j + " " + outputLayer[i].weights[j]);
             }
             outputLayer[i].deltaTreshold = learningRate * outputLayer[i].errorSignal + momentum * outputLayer[i].deltaTreshold;
             outputLayer[i].treshold += outputLayer[i].deltaTreshold;
-            //ystem.out.println("OLt " + i + " " + outputLayer[i].treshold);
         }
         //computing changes of weights on neurons of input layer
         for (int i = 0; i < hiddenLayer.length; i++) {
             for (int j = 0; j < inputLayer.length; j++) {
                 hiddenLayer[i].deltaWeights[j] = learningRate * hiddenLayer[i].errorSignal * inputLayer[j].activity + momentum * hiddenLayer[i].deltaWeights[j];
                 hiddenLayer[i].weights[j] += hiddenLayer[i].deltaWeights[j];
-                //System.out.println("HLw " + i + " " + j + " " + hiddenLayer[i].weights[j]);
             }
             hiddenLayer[i].deltaTreshold = learningRate * hiddenLayer[i].errorSignal + momentum * hiddenLayer[i].deltaTreshold;
             hiddenLayer[i].treshold += hiddenLayer[i].deltaTreshold;
-            //System.out.println("HLt " + i + " " + hiddenLayer[i].treshold);
         }
     }
     
@@ -356,6 +326,7 @@ public class Network {
         else return output;
     }
     
+    //computing of mean square error
     private double mse(double[] data)
     {
         double partial = 0.0;
@@ -365,76 +336,68 @@ public class Network {
         return partial/2;
     }
     
+    //training of network
     public void train(double stopCondition)
     {
-        double uspesnost = 0.0;
+        double successRate = 0.0;
         double mse = 0.0;
         Random rand = new Random(System.currentTimeMillis());
         int trainDataLength = trainData.get(0).length - 1;
         for(int i=0; i<epochCount; i++)
         {
+            //shuffle train data
             Collections.shuffle(trainData, rand);
             for (int j = 0; j < trainData.size(); j++) {
                 feedForward(trainData.get(j));
                 backPropagation(new double[] {trainData.get(j)[trainDataLength]});
-                //buffer.append(output());
-                /*if(trainData.get(j)[trainDataLength] == roundOutput(output(0))) uspesnost++;
-                mse += mse(new double[] {trainData.get(j)[trainDataLength]});*/
             }
+            //computing of success rate and mse
             for (int j = 0; j < trainData.size(); j++) {
                 feedForward(trainData.get(j));
-                if(trainData.get(j)[trainDataLength] == roundOutput(output(0))) uspesnost++;
+                if(trainData.get(j)[trainDataLength] == roundOutput(output(0))) successRate++;
                 mse += mse(new double[] {trainData.get(j)[trainDataLength]});
             }
-            fifo.offer("Uspesnost: "+uspesnost/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
-            /*synchronized (fifo)
-            {
-                fifo.notifyAll();
-            }*/
+            //printing statistics
+            fifo.offer("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
             
-            /*System.out.println("Uspesnost: "+uspesnost/trainData.size());
-            System.out.println("MSE: " + mse/trainData.size());
-            System.out.println("Epocha: " + i);*/
             if((mse/trainData.size()) <= stopCondition) break;
-            uspesnost = 0.0;
+            successRate = 0.0;
             mse = 0.0;
         }
     }
     
+    //training of network with iris data
     public void trainIsis(double stopCondition)
     {
-        double uspesnost = 0.0;
+        double successRate = 0.0;
         double mse = 0.0;
         Random rand = new Random(System.currentTimeMillis());        
         for(int i=0; i<epochCount; i++)
         {
             Collections.shuffle(trainData, rand);
-            
-            //trainDataSubset.add(trainData.get(i))
             for (int j = 0; j < trainData.size(); j++) {
                 feedForward(trainData.get(j));
-                backPropagation(new double[] {trainData.get(j)[4], trainData.get(j)[5], trainData.get(j)[6]});
-                //buffer.append(output());
-                if(trainData.get(j)[4] == roundOutput(output(0)) && trainData.get(j)[5] == roundOutput(output(1)) && trainData.get(j)[6] == roundOutput(output(2))) uspesnost +=1;
-                mse += mse(new double[] {trainData.get(j)[4], trainData.get(j)[5], trainData.get(j)[6]});
-                //System.out.println("/////////////////");
-                
+                backPropagation(new double[] {trainData.get(j)[4], trainData.get(j)[5], trainData.get(j)[6]});              
             }
-            fifo.add("Uspesnost: "+uspesnost/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
-            /*System.out.println("Uspesnost: "+uspesnost/trainData.size());
-            System.out.println("MSE: " + mse/trainData.size());
-            System.out.println("Epocha: " + i);*/
+            
+            for (int j = 0; j < trainData.size(); j++) {
+                feedForward(trainData.get(j));
+                if(trainData.get(j)[4] == roundOutput(output(0)) && trainData.get(j)[5] == roundOutput(output(1)) && trainData.get(j)[6] == roundOutput(output(2))) successRate +=1;
+                mse += mse(new double[] {trainData.get(j)[4], trainData.get(j)[5], trainData.get(j)[6]});
+            }
+            fifo.add("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
             if((mse/trainData.size()) <= stopCondition) break;
-            uspesnost = 0.0;
+            successRate = 0.0;
             mse = 0.0;
         }
     }
     
+    //testing of network
     public void test(int type) {
         String output = new String();
         int testDataLength = testData.get(0).length - 1;
         output += "Vypocitany vystup \t zelany vystup\n";
-        double uspesnost =0.0;
+        double successRate =0.0;
         for (int i = 0; i < testData.size(); i++) {
             feedForward(testData.get(i));
 
@@ -442,14 +405,13 @@ public class Network {
                 case 0:
                 case 1:
                     output += roundOutput(output(0)) + "\t" + testData.get(i)[testDataLength] + "\n";
-                    if(roundOutput(output(0)) == testData.get(i)[testDataLength]) uspesnost++;
+                    if(roundOutput(output(0)) == testData.get(i)[testDataLength]) successRate++;
                     break;
                 case 2:
                     String computedOutput = new String();
                     String desiredOutput = new String();
                     for (int j = 0; j < this.outputLayer.length; j++) {
                         computedOutput += roundOutput(output(j));
-                        //output += roundOutput(output(j)) + " ";
                     }
                     switch (computedOutput) {
                         case "1.00.00.0":
@@ -484,10 +446,8 @@ public class Network {
                     output += "\n";
                     break;
             }
-
-            //System.out.println("");
         }
-        output += "Uspesnost testu: " + uspesnost/testData.size() + "\n";
+        output += "Uspesnost testu: " + successRate/testData.size() + "\n";
         fifo.offer(output);
     }
 }
