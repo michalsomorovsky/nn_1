@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import au.com.bytecode.opencsv.CSVWriter;
+import java.io.FileWriter;
 
 /**
  *
@@ -337,8 +339,19 @@ public class Network {
     }
     
     //training of network
-    public void train(double stopCondition)
+    public void train(double stopCondition, int type, int k) throws IOException
     {
+        CSVWriter writer;
+        switch(type)
+        {
+            case 0:
+                writer = new CSVWriter(new FileWriter("xor_"+learningRate+"_"+momentum+"_"+epochCount+"_"+k+".csv"));
+                break;
+            default:
+                writer = new CSVWriter(new FileWriter("parita_"+learningRate+"_"+momentum+"_"+epochCount+"_"+k+".csv"));
+                break;
+        }
+        
         double successRate = 0.0;
         double mse = 0.0;
         Random rand = new Random(System.currentTimeMillis());
@@ -359,16 +372,20 @@ public class Network {
             }
             //printing statistics
             fifo.offer("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
-            
+            String[] riadok = {String.valueOf(successRate/trainData.size()), String.valueOf(mse/trainData.size())};
+            writer.writeNext(riadok);
             if((mse/trainData.size()) <= stopCondition) break;
             successRate = 0.0;
             mse = 0.0;
         }
+        
+        writer.close();
     }
     
     //training of network with iris data
     public void trainIsis(double stopCondition)
     {
+        //CSVWriter writer = new CSVWriter(new FileWriter("iris_"+learningRate+"_"+momentum+"_"+epochCount+"_"+k+".csv"));
         double successRate = 0.0;
         double mse = 0.0;
         Random rand = new Random(System.currentTimeMillis());        
@@ -385,7 +402,8 @@ public class Network {
                 if(trainData.get(j)[4] == roundOutput(output(0)) && trainData.get(j)[5] == roundOutput(output(1)) && trainData.get(j)[6] == roundOutput(output(2))) successRate +=1;
                 mse += mse(new double[] {trainData.get(j)[4], trainData.get(j)[5], trainData.get(j)[6]});
             }
-            fifo.add("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
+            //fifo.add("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
+            fifo.add("Epocha: " + i+"\n"+successRate/trainData.size() + "\n" + mse/trainData.size() +"\n");
             if((mse/trainData.size()) <= stopCondition) break;
             successRate = 0.0;
             mse = 0.0;
@@ -444,6 +462,7 @@ public class Network {
                             output += "nezname";
                     }
                     output += "\n";
+                    if(computedOutput.equals(desiredOutput)) successRate++;
                     break;
             }
         }
