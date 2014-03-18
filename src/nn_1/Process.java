@@ -181,7 +181,11 @@ public class Process {
                     } catch (IOException ex) {
                         Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    neuralNetwork.trainIsis(window.getStopCondition());
+            try {
+                neuralNetwork.trainIsis(window.getStopCondition(), 0);
+            } catch (IOException ex) {
+                Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
+            }
                     break;
                 case 0:
                 default:

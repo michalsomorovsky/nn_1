@@ -383,9 +383,9 @@ public class Network {
     }
     
     //training of network with iris data
-    public void trainIsis(double stopCondition)
+    public void trainIsis(double stopCondition, int k) throws IOException
     {
-        //CSVWriter writer = new CSVWriter(new FileWriter("iris_"+learningRate+"_"+momentum+"_"+epochCount+"_"+k+".csv"));
+        CSVWriter writer = new CSVWriter(new FileWriter("iris_"+learningRate+"_"+momentum+"_"+epochCount+"_"+k+".csv"));
         double successRate = 0.0;
         double mse = 0.0;
         Random rand = new Random(System.currentTimeMillis());        
@@ -404,6 +404,8 @@ public class Network {
             }
             //fifo.add("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
             fifo.add("Epocha: " + i+"\n"+successRate/trainData.size() + "\n" + mse/trainData.size() +"\n");
+            String[] riadok = {String.valueOf(successRate/trainData.size()), String.valueOf(mse/trainData.size())};
+            writer.writeNext(riadok);
             if((mse/trainData.size()) <= stopCondition) break;
             successRate = 0.0;
             mse = 0.0;
