@@ -38,6 +38,7 @@ public class Network {
     File testFile;
     ArrayList<double[]> trainData;
     ArrayList<double[]> testData;
+    double[] desiredOutput;
     int epochCount;
     //queue for output statistics
     Queue<String> fifo;
@@ -70,12 +71,14 @@ public class Network {
         trainData = new ArrayList();
         FileReader reader = new FileReader(trainFile);
         BufferedReader bufferedReader = new BufferedReader(reader);
-        String line = null;
+        String line;
         char[] chararray;
         String[] stringarray;
         switch(type)
         {
             case 1://parity
+                desiredOutput = new double[256];
+                int k=0;
                 while((line = bufferedReader.readLine()) != null)
                 {
                     double[] lineArray = new double[9];
@@ -86,6 +89,7 @@ public class Network {
                         i++;
                     }
                     trainData.add(lineArray);
+                    desiredOutput[k++] = lineArray[8];
                 }
                 break;
             case 2://Iris
@@ -130,9 +134,12 @@ public class Network {
                 }
                 break;
             case 0://xor
+                desiredOutput = new double[4];
+                k=0;
                 while((line = bufferedReader.readLine()) != null)
                 {
                     trainData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1, 2)), Double.parseDouble(line.substring(2))});
+                    desiredOutput[k++] = Double.parseDouble(line.substring(2));
                 }
                 break;
         }
@@ -168,7 +175,14 @@ public class Network {
                 testData = new ArrayList<>();
                 while((line = bufferedReader.readLine()) != null)
                 {
-                    testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1, 2)), Double.parseDouble(line.substring(2))});
+                    if(line.length() == 3)
+                    {
+                        testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1, 2)), Double.parseDouble(line.substring(2))});
+                    }
+                    else
+                    {
+                        testData.add(new double[] {Double.parseDouble(line.substring(0, 1)), Double.parseDouble(line.substring(1))});
+                    }
                 }
                 break;
         }
@@ -241,11 +255,6 @@ public class Network {
         return fifo.poll();
     }
     
-    public Queue getFifo()
-    {
-        return fifo;
-    }
-    
     public void feedForward(double[] inputData)
     {
         //setting input values
@@ -281,9 +290,7 @@ public class Network {
     }
     
     public void backPropagation(double[] inputData)
-    {
-        int indexOfLast = inputData.length -1;
-        
+    {        
         //computing error signal on neurons of output layer
         for (int i = 0; i < outputLayer.length; i++) {
             outputLayer[i].errorSignal = dSigmoid(outputLayer[i].netActivity) * (inputData[i] - outputLayer[i].activity);
@@ -359,7 +366,7 @@ public class Network {
             }
             //printing statistics
             fifo.offer("Uspesnost: "+(successRate/trainData.size())*100 + "%\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
-            
+            //testing alternative stop condition
             if((mse/trainData.size()) <= stopCondition) break;
             successRate = 0.0;
             mse = 0.0;
@@ -395,21 +402,20 @@ public class Network {
     //testing of network
     public void test(int type) {
         String output = new String();
-        int testDataLength = testData.get(0).length - 1;
         output += "Vypocitany vystup \t zelany vystup\n";
         double successRate =0.0;
         for (int i = 0; i < testData.size(); i++) {
             feedForward(testData.get(i));
-
+            //computing success rate
             switch (type) {
                 case 0:
                 case 1:
-                    output += roundOutput(output(0)) + "\t\t" + testData.get(i)[testDataLength] + "\n";
-                    if(roundOutput(output(0)) == testData.get(i)[testDataLength]) successRate++;
+                    output += roundOutput(output(0)) + "\t\t" + desiredOutput[i] + "\n";                    
+                    if(roundOutput(output(0)) == desiredOutput[i]) successRate++;
                     break;
                 case 2:
                     String computedOutput = new String();
-                    String desiredOutput = new String();
+                    String desiredOutputIris = new String();
                     for (int j = 0; j < this.outputLayer.length; j++) {
                         computedOutput += roundOutput(output(j));
                     }
@@ -428,9 +434,9 @@ public class Network {
                     }
                     output += "\t\t";
                     for (int j = 0; j < this.outputLayer.length; j++) {
-                        desiredOutput += testData.get(i)[j + 4];
+                        desiredOutputIris += testData.get(i)[j + 4];
                     }
-                    switch (desiredOutput) {
+                    switch (desiredOutputIris) {
                         case "1.00.00.0":
                             output += "Iris-setosa";
                             break;
@@ -443,7 +449,7 @@ public class Network {
                         default:
                             output += "nezname";
                     }
-                    if(computedOutput.equals(desiredOutput)) successRate++;
+                    if(computedOutput.equals(desiredOutputIris)) successRate++;
                     output += "\n";
                     break;
             }
