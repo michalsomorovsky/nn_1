@@ -358,7 +358,7 @@ public class Network {
                 mse += mse(new double[] {trainData.get(j)[trainDataLength]});
             }
             //printing statistics
-            fifo.offer("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
+            fifo.offer("Uspesnost: "+(successRate/trainData.size())*100 + "%\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
             
             if((mse/trainData.size()) <= stopCondition) break;
             successRate = 0.0;
@@ -385,7 +385,7 @@ public class Network {
                 if(trainData.get(j)[4] == roundOutput(output(0)) && trainData.get(j)[5] == roundOutput(output(1)) && trainData.get(j)[6] == roundOutput(output(2))) successRate +=1;
                 mse += mse(new double[] {trainData.get(j)[4], trainData.get(j)[5], trainData.get(j)[6]});
             }
-            fifo.add("Uspesnost: "+successRate/trainData.size() + "\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
+            fifo.add("Uspesnost: "+(successRate/trainData.size())*100 + "%\n" + "MSE: " + mse/trainData.size() +"\n"+"Epocha: " + i+"\n");
             if((mse/trainData.size()) <= stopCondition) break;
             successRate = 0.0;
             mse = 0.0;
@@ -404,7 +404,7 @@ public class Network {
             switch (type) {
                 case 0:
                 case 1:
-                    output += roundOutput(output(0)) + "\t" + testData.get(i)[testDataLength] + "\n";
+                    output += roundOutput(output(0)) + "\t\t" + testData.get(i)[testDataLength] + "\n";
                     if(roundOutput(output(0)) == testData.get(i)[testDataLength]) successRate++;
                     break;
                 case 2:
@@ -443,11 +443,12 @@ public class Network {
                         default:
                             output += "nezname";
                     }
+                    if(computedOutput.equals(desiredOutput)) successRate++;
                     output += "\n";
                     break;
             }
         }
-        output += "Uspesnost testu: " + successRate/testData.size() + "\n";
+        output += "Uspesnost testu: " + (successRate/testData.size())*100 + "%\n";
         fifo.offer(output);
     }
 }

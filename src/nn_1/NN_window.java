@@ -71,6 +71,10 @@ public class NN_window extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
 
+        jFileChooser1.setCurrentDirectory(new java.io.File("/home/dante/a"));
+
+        jFileChooser2.setCurrentDirectory(new java.io.File("/home/dante/a"));
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ANN simulator");
 
